@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.page-container {
+  border-top: 6px groove green;
+  padding: 12px 0 60px 0;
+}
+
+// SCROLL BAR
+.invisible-scroll-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.invisible-scroll-bar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
