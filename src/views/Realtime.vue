@@ -25,133 +25,207 @@
       </div>
     </div>
 
+    <div class="d-flex flex-wrap table-responsive mt-4">
+      <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th style="width:7%">Pair of Coin</th>
+                <th style="width:7%">Buy Price</th>
+                <th style="width:7%">Amount</th>
+                <th>Asset</th>
+                <th>Current price</th>
+                <th>%Profit</th>
+                <th>PNL(USD)</th>
+                <th>PNL(VND)</th>
+                <th>ROI</th>
+                <th style="width:7%">Sell Price</th>
+                <th>%Profit</th>
+                <th>Asset</th>
+                <th style="width:5%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(item, index) in slots" :key="index">
+              <td>
+                <b-form-input v-model="slots[index].pairOfCoinsWithHyphen" placeholder="Pair of coins: btc-usdt"
+                    spellcheck="false"></b-form-input>
+              </td>
+              <td>
+                  <b-form-input v-model="slots[index].buyPrice" placeholder="Enter buy price" spellcheck="false">
+                  </b-form-input>
+              </td>
+              <td>
+                  <b-form-input v-model="slots[index].amount" placeholder="Enter amount" spellcheck="false">
+                  </b-form-input>
+              </td>
+              <td>
+                  <div>
+                      <!-- <b-badge variant="info" class="col-sm-4 mr-1">Asset</b-badge> -->
+                      <span>{{ item.asset | currency }}</span>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <!-- <b-badge variant="info" class="col-sm-4 mr-1">Current price</b-badge> -->
+                      <span>{{ item.curPrice | currency }}</span>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <!-- <b-badge :class="[item.isWin ? 'badge-success col-sm-4 mr-1' : 'badge-danger col-sm-4 mr-1']">
+                        %Profit</b-badge> -->
+                      <span :class="[item.isWin ? 'badge-success' : 'badge-danger']">{{ item.profitInPercent }}</span>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <span :class="[item.isWin ? 'badge-success' : 'badge-danger']">{{ item.PNL | currency }}</span>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <span :class="[item.isWin ? 'badge-success' : 'badge-danger']">{{ item.PNLVND | currency }}</span>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <!-- <b-badge variant="info" class="col-sm-4 mr-1">ROI</b-badge> -->
+                      <span>{{ item.ROI | currency }}</span>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <b-form-input v-model="slots[index].sellPrice" placeholder="Sell price" spellcheck="false">
+                      </b-form-input>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <!-- <b-badge variant="info" class="col-sm-4 col-md-4 mr-1">%Profit</b-badge> -->
+                      <span>{{ item.willingProfitInPercent }}</span>
+                  </div>
+              </td>
+              <td>
+                  <div>
+                      <!-- <b-badge variant="primary" class="col-sm-4 col-md-4 mr-1">Asset*</b-badge> -->
+                      <span>{{ item.assetBaseOnWP | currency }}</span>
+                  </div>
+              </td>
+              <td>
+                <b-button variant="success" @click="show()">Show</b-button>
+                <!-- <b-overlay :show="isLoadingApp" rounded opacity="0.6" spinner-small spinner-variant="primary" class="py-2">
+                      <div class="d-flex justify-content-between">
+                          <b-button variant="success" @click="show()">Show</b-button>
+
+                          <b-button variant="info" @click="sendReport(index)">
+                              @Send
+                          </b-button>
+                      </div>
+                  </b-overlay> -->
+              </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+
     <div class="d-flex flex-wrap">
-      <div
-        class="col-md-4 col-sm-6 col-12 mt-4"
+      <div class="col-md-4 col-sm-6 col-12 mt-4"
         v-for="(item, index) in slots"
         :key="index"
       >
         <b-card :ref="`card${index}`">
           <template #header>
-            <div class="d-flex justify-content-between">
-              <div class="text-uppercase">
-                <span>{{ item.pairOfCoinsWithHyphen }}</span>
-                <b-badge
-                  :class="[
+              <div class="d-flex justify-content-between">
+                  <div class="text-uppercase">
+                      <span>{{ item.pairOfCoinsWithHyphen }}</span>
+                      <b-badge :class="[
                     item.status === 'open' ? 'badge-success' : 'badge-dark',
-                  ]"
-                  class="ml-1"
-                  >{{ item.status }}</b-badge
-                >
+                  ]" class="ml-1">{{ item.status }}</b-badge>
+                  </div>
+                  <b-button size="sm" @click="moveSlot(index)">
+                      Move <b-icon icon="arrow-up" aria-hidden="true"></b-icon>
+                  </b-button>
               </div>
-              <b-button size="sm" @click="moveSlot(index)"
-                >Move <b-icon icon="arrow-up" aria-hidden="true"></b-icon
-              ></b-button>
-            </div>
           </template>
           <b-card-text>
-            <b-form-input
-              v-model="slots[index].pairOfCoinsWithHyphen"
-              placeholder="Enter your pair of coins: btc-usdt"
-              spellcheck="false"
-            ></b-form-input>
-            <b-form-input
-              v-model="slots[index].buyPrice"
-              placeholder="Enter buy price"
-              spellcheck="false"
-              class="mt-2"
-            ></b-form-input>
-            <b-form-input
-              v-model="slots[index].amount"
-              placeholder="Enter amount"
-              spellcheck="false"
-              class="mt-2"
-            ></b-form-input>
-            <div class="mt-2">
-              <b-badge variant="info" class="col-sm-4 mr-1">Asset</b-badge>
-              <span>{{ item.asset | currency }}</span>
-            </div>
-            <div class="mt-2">
-              <b-badge variant="info" class="col-sm-4 mr-1">Current price</b-badge>
-              <span>{{ item.curPrice | currency }}</span>
-            </div>
-            <div class="mt-2">
-              <b-badge :class="[item.isWin ? 'badge-success col-sm-4 mr-1' : 'badge-danger']">
-                %Profit</b-badge>
-              <span>{{ item.profitInPercent }}</span>
-            </div>
-            <div class="mt-2">
-              <b-badge :class="[item.isWin ? 'badge-success col-sm-4 mr-1' : 'badge-danger']">
-                PNL</b-badge>
-              <span>{{ item.PNL | currency }}</span>
-            </div>
-            <div class="mt-2">
-              <b-badge :class="[item.isWin ? 'badge-success col-sm-4 mr-1' : 'badge-danger']">
-                PNL VND</b-badge>
-              <span>{{ item.PNLVND | currency }}</span>
-            </div>
-            <div class="mt-2">
-              <b-badge variant="info" class="col-sm-4 mr-1">ROI</b-badge>
-              <span>{{ item.ROI | currency }}</span>
-            </div>
-            <h6 class="mt-3">Calculate how much profit on your way:</h6>
-            <div class="row mt-2 d-flex align-items-center">
-              <div class="col-4">
-                <b-form-input
-                  v-model="slots[index].sellPrice"
-                  placeholder="Sell price"
-                  spellcheck="false"
-                ></b-form-input>
+              <b-form-input v-model="slots[index].pairOfCoinsWithHyphen" placeholder="Enter your pair of coins: btc-usdt"
+                  spellcheck="false"></b-form-input>
+              <b-form-input v-model="slots[index].buyPrice" placeholder="Enter buy price" spellcheck="false" class="mt-2">
+              </b-form-input>
+              <b-form-input v-model="slots[index].amount" placeholder="Enter amount" spellcheck="false" class="mt-2">
+              </b-form-input>
+              <div class="mt-2">
+                  <b-badge variant="info" class="col-sm-4 mr-1">Asset</b-badge>
+                  <span>{{ item.asset | currency }}</span>
               </div>
-              <div class="col-8 d-flex flex-column">
-                <div>
-                  <b-badge variant="info" class="col-sm-4 col-md-4 mr-1">%Profit</b-badge>
-                  <span>{{ item.willingProfitInPercent }}</span>
-                </div>
-                <div>
-                  <b-badge variant="primary" class="col-sm-4 col-md-4 mr-1">Asset*</b-badge>
-                  <span>{{ item.assetBaseOnWP | currency }}</span>
-                </div>
+              <div class="mt-2">
+                  <b-badge variant="info" class="col-sm-4 mr-1">Current price</b-badge>
+                  <span>{{ item.curPrice | currency }}</span>
               </div>
-            </div>
-            <div class="row mt-2 d-flex align-items-center">
-              <div class="col-4">
-                <b-form-select
-                  v-model="slots[index].selectedProfitInPercent"
-                  :options="profitOptions"
-                ></b-form-select>
+              <div class="mt-2">
+                  <b-badge :class="[item.isWin ? 'badge-success col-sm-4 mr-1' : 'badge-danger col-sm-4 mr-1']">
+                      %Profit</b-badge>
+                  <span>{{ item.profitInPercent }}</span>
               </div>
-              <div class="col-8 d-flex flex-column">
-                <div>
-                  <b-badge variant="info" class="col-sm-4 col-md-4 mr-1">Sell price</b-badge>
-                  <span>{{ item.willingSellPrice | currency }}</span>
-                </div>
-                <div>
-                  <b-badge variant="primary" class="col-sm-4 col-md-4 mr-1">Asset*</b-badge>
-                  <span>{{ item.assetBaseOnSP | currency }}</span>
-                </div>
+              <div class="mt-2">
+                  <b-badge :class="[item.isWin ? 'badge-success col-sm-4 mr-1' : 'badge-danger col-sm-4 mr-1']">
+                      PNL</b-badge>
+                  <span>{{ item.PNL | currency }}</span>
               </div>
-            </div>
-            <div class="mt-2 action-wrapper">
-              <b-overlay
-                :show="isLoadingApp"
-                rounded
-                opacity="0.6"
-                spinner-small
-                spinner-variant="primary"
-                class="py-2"
-              >
-                <div class="d-flex justify-content-between">
-                  <b-button variant="success" @click="show()">Show</b-button>
+              <div class="mt-2">
+                  <b-badge :class="[item.isWin ? 'badge-success col-sm-4 mr-1' : 'badge-danger col-sm-4 mr-1']">
+                      PNL VND</b-badge>
+                  <span>{{ item.PNLVND | currency }}</span>
+              </div>
+              <div class="mt-2">
+                  <b-badge variant="info" class="col-sm-4 mr-1">ROI</b-badge>
+                  <span>{{ item.ROI | currency }}</span>
+              </div>
+              <h6 class="mt-3">Calculate how much profit on your way:</h6>
+              <div class="row mt-2 d-flex align-items-center">
+                  <div class="col-4">
+                      <b-form-input v-model="slots[index].sellPrice" placeholder="Sell price" spellcheck="false">
+                      </b-form-input>
+                  </div>
+                  <div class="col-8 d-flex flex-column">
+                      <div>
+                          <b-badge variant="info" class="col-sm-4 col-md-4 mr-1">%Profit</b-badge>
+                          <span>{{ item.willingProfitInPercent }}</span>
+                      </div>
+                      <div>
+                          <b-badge variant="primary" class="col-sm-4 col-md-4 mr-1">Asset*</b-badge>
+                          <span>{{ item.assetBaseOnWP | currency }}</span>
+                      </div>
+                  </div>
+              </div>
+              <div class="row mt-2 d-flex align-items-center">
+                  <div class="col-4">
+                      <b-form-select v-model="slots[index].selectedProfitInPercent" :options="profitOptions"></b-form-select>
+                  </div>
+                  <div class="col-8 d-flex flex-column">
+                      <div>
+                          <b-badge variant="info" class="col-sm-4 col-md-4 mr-1">Sell price</b-badge>
+                          <span>{{ item.willingSellPrice | currency }}</span>
+                      </div>
+                      <div>
+                          <b-badge variant="primary" class="col-sm-4 col-md-4 mr-1">Asset*</b-badge>
+                          <span>{{ item.assetBaseOnSP | currency }}</span>
+                      </div>
+                  </div>
+              </div>
+              <div class="mt-2 action-wrapper">
+                  <b-overlay :show="isLoadingApp" rounded opacity="0.6" spinner-small spinner-variant="primary" class="py-2">
+                      <div class="d-flex justify-content-between">
+                          <b-button variant="success" @click="show()">Show</b-button>
 
-                  <b-button variant="info" @click="sendReport(index)">
-                    @Send
-                  </b-button>
-                </div>
-              </b-overlay>
-            </div>
+                          <b-button variant="info" @click="sendReport(index)">
+                              @Send
+                          </b-button>
+                      </div>
+                  </b-overlay>
+              </div>
           </b-card-text>
-        </b-card>
+      </b-card>
       </div>
     </div>
     <b-alert
